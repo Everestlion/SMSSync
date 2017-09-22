@@ -80,7 +80,7 @@ android {
             // Default proguard files
             proguardFile 'proguard-project.pro'
             proguardFile getDefaultProguardFile('proguard-android.txt')
-            signingConfig signingConfigs.releaseSign
+            //signingConfig signingConfigs.releaseSign
         }
 
         debug {
