@@ -28,7 +28,6 @@ buildscript {
         classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
         classpath 'com.github.triplet.gradle:play-publisher:1.1.5'
         classpath 'org.ajoberstar:gradle-git:1.6.0'
-        classpath 'com.google.gms:google-services:3.0.0'
     }
     // Exclude the version that the android plugin depends on.
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'

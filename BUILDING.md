@@ -82,7 +82,6 @@ releaseKeyStore=<key_store_file>
 releaseKeyPassword=<key_password>
 releaseKeyStorePassword=<key_store_password>
 releaseKeyAlias=key_alias
-googleAnalyticsCode=<google-analytics-code>
 ```
 
 A typical `gradle.properties` content should look like this:
