@@ -19,12 +19,11 @@ import org.ajoberstar.gradle.git.release.opinion.Strategies
 import org.ajoberstar.grgit.Grgit
 
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
+//apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'org.ajoberstar.release-opinion'
 apply plugin: 'com.github.triplet.play'
 
 def isTravis = "true".equals(System.getenv("TRAVIS"))
-
 def preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
 
 def getGooglePlaystoreServiceAccountEmail() {
@@ -55,12 +54,10 @@ android {
     buildToolsVersion globalConfiguration.getAt("androidBuildToolsVersion")
 
     signingConfigs {
-
         releaseSign
     }
 
     buildTypes {
-
         release {
             if (project.hasProperty('googleAnalyticsCode')) {
                 resValue "string", "ga_trackingId", "${googleAnalyticsCode}"
@@ -80,7 +77,7 @@ android {
             // Default proguard files
             proguardFile 'proguard-project.pro'
             proguardFile getDefaultProguardFile('proguard-android.txt')
-            //signingConfig signingConfigs.releaseSign
+            signingConfig signingConfigs.releaseSign
         }
 
         debug {
@@ -99,9 +96,16 @@ android {
         minSdkVersion globalConfiguration.getAt("androidMinSdkVersion")
         targetSdkVersion globalConfiguration.getAt("androidTargetSdkVersion")
         versionCode globalConfiguration.getAt("androidVersionCode")
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner globalConfiguration.getAt("testInstrumentationRunner")
         def publicKey = project.hasProperty('inAppPurchasePubKey') ? inAppPurchasePubKey :
-                'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAogSL6I/lnQ0bVEEwttOu8CmrZvZzkTrFcsLiHjeb6Sw01+i8nTNW70QsTe1U2Hg4ELv3Hrm0Vt5gyQL2r9V4h8IWhbGNlHPAWJFP/dUgbwYFBUsJ4SSOS4N2kN9FER0mWwZ90boulNaHd8g8AQkwaBAzsNL5w+uij4hfZ9AsAO/rdhqXkAQeV6ykVgW0Q9qoWTcPg0ly7lOtxMmnvPFnrPXTt/SyoZEmNE5j02sh0eDdyGR5hEc16ZcMM2tvndRomfi+aYeswguZf3V+J+fAcXiBiX4Q81356g+nFJfMUxu8D7o0ZDPSS2u4FW79QhRjWzijJ/4EIw4TQ1jtKBapgwIDAQAB';
+                'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAogSL6I/lnQ0bVEEwttOu8C' +
+                        'mrZvZzkTrFcsLiHjeb6Sw01+i8nTNW70QsTe1U2Hg4ELv3Hrm0Vt5gyQL2r' +
+                        '9V4h8IWhbGNlHPAWJFP/dUgbwYFBUsJ4SSOS4N2kN9FER0mWwZ90boulNaH' +
+                        'd8g8AQkwaBAzsNL5w+uij4hfZ9AsAO/rdhqXkAQeV6ykVgW0Q9qoWTcPg0l' +
+                        'y7lOtxMmnvPFnrPXTt/SyoZEmNE5j02sh0eDdyGR5hEc16ZcMM2tvndRomf' +
+                        'i+aYeswguZf3V+J+fAcXiBiX4Q81356g+nFJfMUxu8D7o0ZDPSS2u4FW79Q' +
+                        'hRjWzijJ/4EIw4TQ1jtKBapgwIDAQAB';
         if (!project.hasProperty('inAppPurchasePubKey')) {
             println 'Missing inAppPurchasePubKey. Using the default from SMSsync project'
         }
@@ -136,45 +140,30 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    android.applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def outputFile = output.outputFile
-            if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                def newName = outputFile.name.replace(outputFile.name,
-                        "smssync-${variant.name}-v" + defaultConfig.versionName + "-" +
-                                variant.buildType.name.toUpperCase() +
-                                ".apk");
-
-                output.outputFile = file("$project.buildDir/apk/" + newName);
-                if (output.zipAlign) {
-                    output.zipAlign.outputFile =
-                            file("$project.buildDir/apk/" + newName.replace("-unaligned", ""));
-                }
-            }
-        }
-    }
-
+    flavorDimensions "version"
     productFlavors {
-
         withAnalytics {
             applicationId 'org.addhen.smssync'
         }
-
         noAnalytics {
             applicationId 'org.addhen.smssync'
         }
-
         internal {
             applicationId 'org.addhen.smssync.internal'
+        }
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "smssync-${variant.name}_v${defaultConfig.versionName}-" +
+                    variant.buildType.name.toUpperCase() + ".apk"
         }
     }
 
     dexOptions {
         // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
         preDexLibraries = preDexEnabled && !isTravis
-        incremental = true;
+        //incremental = true; //default
     }
-
     testOptions {
         unitTests.returnDefaultValues = true
     }
@@ -184,19 +173,15 @@ android {
     }
 }
 
-retrolambda {
-    jvmArgs '-noverify'
-}
+//retrolambda {
+//    jvmArgs '-noverify'
+//}
 
 release {
     grgit = Grgit.open(dir: '.')
-
     def tagMessage = readWhatsNewFile("whatsnew-${trackProperty()}");
-
     versionStrategy Strategies.PRE_RELEASE_ALPHA_BETA
-
     android.defaultConfig.versionName = project.version.toString()
-
     tagStrategy {
         generateMessage = { version -> "\n\nRelease of $version.version\n$tagMessage" }
     }
@@ -234,37 +219,37 @@ task runApp(type: Exec, dependsOn: ['build', 'installWithAnalyticsDebug']) {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+    implementation fileTree(dir: 'libs', include: '*.jar')
     def appDependencies = rootProject.ext.appDependencies
     def appTestDependencies = rootProject.ext.appTestDependencies
     annotationProcessor appDependencies.daggerCompiler // Needed for source code generation
     annotationProcessor appDependencies.butterKnifeComplier
-    compile appDependencies.raiburari
-    compile appDependencies.cupboard
-    compile appDependencies.butterKnife
-    compile appDependencies.wakeful
-    compile appDependencies.okHttp
-    compile appDependencies.twitter4jCore
-    compile appDependencies.nineOldAndroids
-    compile appDependencies.loggingInterceptor
-    compile appDependencies.bottomSheet
-    compile appDependencies.zXingQRCode
-    compile appDependencies.supportPreference
-    compile appDependencies.timber
+    implementation appDependencies.raiburari
+    implementation appDependencies.cupboard
+    implementation appDependencies.butterKnife
+    implementation appDependencies.wakeful
+    implementation appDependencies.okHttp
+    implementation appDependencies.twitter4jCore
+    implementation appDependencies.nineOldAndroids
+    implementation appDependencies.loggingInterceptor
+    implementation appDependencies.bottomSheet
+    implementation appDependencies.zXingQRCode
+    implementation appDependencies.supportPreference
+    implementation appDependencies.timber
     // Firebase(analytics, crash report)
-    compile appDependencies.firebaseCore
-    compile appDependencies.firebaseCrash
-    provided appDependencies.javaxAnnotation // Needed to resolve compilation errors
+    implementation appDependencies.firebaseCore
+    implementation appDependencies.firebaseCrash
+    compileOnly appDependencies.javaxAnnotation // Needed to resolve compilation errors
 
     // Test depedencies
-    testCompile appTestDependencies.junit
-    testCompile appTestDependencies.mockito
-    testCompile appTestDependencies.mockWebServer
+    testImplementation appTestDependencies.junit
+    testImplementation appTestDependencies.mockito
+    testImplementation appTestDependencies.mockWebServer
     testAnnotationProcessor appDependencies.daggerCompiler
 
-    androidTestCompile appTestDependencies.mockito
-    androidTestCompile appTestDependencies.dexmaker
-    androidTestCompile appTestDependencies.dexmakerMockito
+    androidTestImplementation appTestDependencies.mockito
+    androidTestImplementation appTestDependencies.dexmaker
+    androidTestImplementation appTestDependencies.dexmakerMockito
     androidTestAnnotationProcessor appDependencies.daggerCompiler
 }
 

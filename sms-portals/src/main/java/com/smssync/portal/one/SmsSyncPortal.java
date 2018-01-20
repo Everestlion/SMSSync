@@ -33,7 +33,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-@SuppressLint({ "NewApi", "HandlerLeak", "HandlerLeak" })
+@SuppressLint({"NewApi", "HandlerLeak", "HandlerLeak"})
 public class SmsSyncPortal extends IntentService {
 
     public static final String SERVICE_NAME = "SmsSyncPortal";
@@ -44,13 +44,14 @@ public class SmsSyncPortal extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-    //doing nothing currently
+        //doing nothing currently
     }
 
     private void sendSMS(String sendTo, String msg) {
         Context context = this.getBaseContext();
 
-        Toast.makeText(getApplicationContext(), getString(R.string.portal_1_sending_to) + sendTo, Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), getString(R.string.portal_1_sending_to)
+                + sendTo, Toast.LENGTH_LONG).show();
         ArrayList<PendingIntent> sentIntents = new ArrayList<PendingIntent>();
         ArrayList<PendingIntent> deliveryIntents = new ArrayList<PendingIntent>();
 
@@ -91,8 +92,8 @@ public class SmsSyncPortal extends IntentService {
      */
     @Override
     public IBinder onBind(Intent intent) {
-        Toast.makeText(getApplicationContext(), getString(R.string.binding_to_portal_1), Toast.LENGTH_SHORT)
-                .show();
+        Toast.makeText(getApplicationContext(), getString(R.string.binding_to_portal_1),
+                Toast.LENGTH_SHORT).show();
         return mMessenger.getBinder();
     }
 

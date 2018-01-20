@@ -17,28 +17,26 @@
 apply from: 'dependencies/dependencies.gradle'
 buildscript {
     repositories {
+        google()
         jcenter()
         maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
-
         maven { url 'https://jitpack.io' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath 'me.tatarka:gradle-retrolambda:3.5.0'
         classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
         classpath 'com.github.triplet.gradle:play-publisher:1.1.5'
         classpath 'org.ajoberstar:gradle-git:1.6.0'
         classpath 'com.google.gms:google-services:3.0.0'
     }
-
     // Exclude the version that the android plugin depends on.
     configurations.classpath.exclude group: 'com.android.tools.external.lombok'
 }
 
 allprojects {
-
     repositories {
-
+        google()
         jcenter()
         maven {
             url "http://repo.commonsware.com.s3.amazonaws.com"
