@@ -23,19 +23,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.ajoberstar.release-opinion'
 apply plugin: 'com.github.triplet.play'
 
-def isTravis = "true".equals(System.getenv("TRAVIS"))
 def preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
-
-def getGooglePlaystoreServiceAccountEmail() {
-    return project.hasProperty('gPlaystoreServiceAccountEmailAddress') ?
-            gPlaystoreServiceAccountEmailAddress : ''
-}
-
-def getGooglePlaystoreServicepk12File() {
-    // Set to home directory if property not set because play plugin doesn't allow empty or null
-    // value for the pk file
-    return project.hasProperty('gPlaystorePKFile') ? gPlaystorePKFile : '~/'
-}
 
 def trackProperty() {
     return project.hasProperty('uploadTrack') ? uploadTrack : 'alpha'
@@ -98,17 +86,6 @@ android {
         versionCode globalConfiguration.getAt("androidVersionCode")
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner globalConfiguration.getAt("testInstrumentationRunner")
-        def publicKey = project.hasProperty('inAppPurchasePubKey') ? inAppPurchasePubKey :
-                'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAogSL6I/lnQ0bVEEwttOu8C' +
-                        'mrZvZzkTrFcsLiHjeb6Sw01+i8nTNW70QsTe1U2Hg4ELv3Hrm0Vt5gyQL2r' +
-                        '9V4h8IWhbGNlHPAWJFP/dUgbwYFBUsJ4SSOS4N2kN9FER0mWwZ90boulNaH' +
-                        'd8g8AQkwaBAzsNL5w+uij4hfZ9AsAO/rdhqXkAQeV6ykVgW0Q9qoWTcPg0l' +
-                        'y7lOtxMmnvPFnrPXTt/SyoZEmNE5j02sh0eDdyGR5hEc16ZcMM2tvndRomf' +
-                        'i+aYeswguZf3V+J+fAcXiBiX4Q81356g+nFJfMUxu8D7o0ZDPSS2u4FW79Q' +
-                        'hRjWzijJ/4EIw4TQ1jtKBapgwIDAQAB';
-        if (!project.hasProperty('inAppPurchasePubKey')) {
-            println 'Missing inAppPurchasePubKey. Using the default from SMSsync project'
-        }
 
         def twitterConsumerKey = project.hasProperty('twitterConsumerKey') ? twitterConsumerKey :
                 'consumer_key'
@@ -121,14 +98,12 @@ android {
         if (!project.hasProperty('twitterSecretKey')) {
             println 'Missing Twitter Secret Key. Using a dummy secret for now'
         }
-        buildConfigField "String", "PUBLIC_LICENSE_KEY", '"' + publicKey + '"'
+        buildConfigField "String", "PUBLIC_LICENSE_KEY", '"' +  '"'
         buildConfigField "String", "TWITTER_CONSUMER_KEY", '"' + twitterConsumerKey + '"'
         buildConfigField "String", "TWITTER_CONSUMER_SECRET", '"' + twitterConsumerSecret + '"'
 
         testApplicationId "org.addhen.smssync.tests"
         applicationId "org.addhen.smssync"
-        buildConfigField "String", "GOOGLE_FORM_URL",
-                project.hasProperty('googleDocsForm') ? googleDocsForm : "\"\""
     }
 
     lintOptions {
@@ -142,9 +117,6 @@ android {
 
     flavorDimensions "version"
     productFlavors {
-        withAnalytics {
-            applicationId 'org.addhen.smssync'
-        }
         noAnalytics {
             applicationId 'org.addhen.smssync'
         }
@@ -160,8 +132,7 @@ android {
     }
 
     dexOptions {
-        // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
-        preDexLibraries = preDexEnabled && !isTravis
+        preDexLibraries = preDexEnabled
         //incremental = true; //default
     }
     testOptions {
@@ -185,13 +156,6 @@ release {
     tagStrategy {
         generateMessage = { version -> "\n\nRelease of $version.version\n$tagMessage" }
     }
-}
-
-play {
-    serviceAccountEmail = getGooglePlaystoreServiceAccountEmail()
-    pk12File = file(getGooglePlaystoreServicepk12File())
-    uploadImages = true
-    track = trackProperty()
 }
 
 if (project.hasProperty('releaseKeyStore') &&

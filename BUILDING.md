@@ -82,10 +82,6 @@ releaseKeyStore=<key_store_file>
 releaseKeyPassword=<key_password>
 releaseKeyStorePassword=<key_store_password>
 releaseKeyAlias=key_alias
-googleDocsForm=<link_to_google_docs_feedback_form>
-gPlaystoreServiceAccountEmailAddress=<playstore_service_account_email>
-gPlaystorePKFile=<google-playstore-pk-file.p12>
-inAppPurchasePubKey=<In-app_purchase_public_key>
 googleAnalyticsCode=<google-analytics-code>
 ```
 
@@ -95,10 +91,6 @@ releaseKeyStore=/home/username/.android/debug.keystore
 releaseKeyStorePassword=android
 releaseKeyAlias=androiddebugkey
 releaseKeyPassword=android
-googleDocsForm="https://docs.google.com/forms/d/1lL/formResponse"
-gPlaystoreServiceAccountEmailAddress=9323892392132-842jajdkdadummy@developer.gserviceaccount.com
-gPlaystorePKFile=/home/username/pdummy-pk-file.p12
-inAppPurchasePubKey=MIDKDLSkdakidkkse8283-23jjkasdk
 googleAnalyticsCode=UA-1234567890
 ```
 
