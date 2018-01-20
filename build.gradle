@@ -14,7 +14,7 @@
  * If you have questions regarding the use of this file, please contact
  * Ushahidi developers at team@ushahidi.com.
  */
-apply from: 'dependencies/dependencies.gradle'
+apply from: 'dependencies.gradle'
 buildscript {
     repositories {
         google()
